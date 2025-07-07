@@ -167,127 +167,119 @@ $(function () {
 
     });
 
-    //  PDF //
 
-    $("#pdfDownload").click(async function () {
-        let selected = [];
-        let anyChecked = $(".row-checkbox:checked").length > 0;
-        let table = $(".data-table").DataTable();
+    async function generatePdf(shouldDownload = true) {
+    let selected = [];
+    let anyChecked = $(".row-checkbox:checked").length > 0;
+    let table = $(".data-table").DataTable();
 
-        // Collect row data
-        for (let rowIndex = 0; rowIndex < table.rows().count(); rowIndex++) {
-            let data = table.row(rowIndex).data();
-            let node = table.row(rowIndex).node();
-            let isChecked = $(node).find(".row-checkbox").is(":checked");
+    for (let rowIndex = 0; rowIndex < table.rows().count(); rowIndex++) {
+        let data = table.row(rowIndex).data();
+        let node = table.row(rowIndex).node();
+        let isChecked = $(node).find(".row-checkbox").is(":checked");
 
-            if (anyChecked && !isChecked) continue;
+        if (anyChecked && !isChecked) continue;
 
-            selected.push({
-                id: data.id,
-                name: data.name,
-                logoUrl: data.logo, // This is the image URL from backend
-                description: data.description || "-",
-            });
-        }
-
-        // Convert all logos to base64 before building PDF body
-        for (let i = 0; i < selected.length; i++) {
-            selected[i].logoBase64 = await getBase64ImageFromUrl(
-                selected[i].logoUrl
-            );
-        }
-
-        // Prepare PDF table body
-        const body = [
-            [
-                { text: "Logo", style: "tableHeader" },
-                { text: "Name", style: "tableHeader" },
-                { text: "Description", style: "tableHeader" },
-            ],
-        ];
-
-        selected.forEach((item) => {
-            const logoCell = item.logoBase64
-                ? {
-                      image: item.logoBase64,
-                      width: 50,
-                      alignment: "center",
-                      margin: [0, 5, 0, 5],
-                  }
-                : {
-                      text: "No Image",
-                      style: "noImage",
-                      alignment: "center",
-                  };
-
-            body.push([
-                logoCell,
-                { text: item.name, style: "boldCell" },
-                { text: item.description, style: "tableCell" },
-            ]);
+        selected.push({
+            id: data.id,
+            name: data.name,
+            logoUrl: data.logo,
+            description: data.description || "-",
         });
+    }
 
-        // Create PDF doc
-        const docDefinition = {
-            content: [
-                { text: "Brand Catalog", style: "title" },
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: [70, "*", "*"],
-                        body: body,
-                    },
-                    layout: {
-                        fillColor: (rowIndex) =>
-                            rowIndex === 0
-                                ? "#1A5276"
-                                : rowIndex % 2 === 0
-                                ? "#EBF5FB"
-                                : null,
-                        hLineColor: () => "#aaa",
-                        vLineColor: () => "#aaa",
-                        paddingLeft: () => 8,
-                        paddingRight: () => 8,
-                        paddingTop: () => 6,
-                        paddingBottom: () => 6,
-                    },
+    for (let i = 0; i < selected.length; i++) {
+        selected[i].logoBase64 = await getBase64ImageFromUrl(selected[i].logoUrl);
+    }
+
+    const body = [
+        [
+            { text: "Logo", style: "tableHeader" },
+            { text: "Name", style: "tableHeader" },
+            { text: "Description", style: "tableHeader" },
+        ],
+    ];
+
+    selected.forEach((item) => {
+        const logoCell = item.logoBase64
+            ? { image: item.logoBase64, width: 50, alignment: "center", margin: [0, 5, 0, 5] }
+            : { text: "No Image", style: "noImage", alignment: "center" };
+
+        body.push([
+            logoCell,
+            { text: item.name, style: "boldCell" },
+            { text: item.description, style: "tableCell" },
+        ]);
+    });
+
+    const docDefinition = {
+        content: [
+            { text: "Brand Catalog", style: "title" },
+            {
+                table: {
+                    headerRows: 1,
+                    widths: [70, "*", "*"],
+                    body: body,
                 },
-            ],
-            styles: {
-                title: {
-                    fontSize: 20,
-                    bold: true,
-                    color: "#154360",
-                    alignment: "center",
-                    margin: [0, 0, 0, 20],
-                },
-                tableHeader: {
-                    bold: true,
-                    fontSize: 13,
-                    color: "white",
-                    fillColor: "#1A5276",
-                    alignment: "center",
-                },
-                tableCell: {
-                    fontSize: 11,
-                    color: "#333",
-                },
-                boldCell: {
-                    fontSize: 12,
-                    bold: true,
-                    color: "#1A5276",
-                },
-                noImage: {
-                    fontSize: 10,
-                    italics: true,
-                    color: "#999",
+                layout: {
+                    fillColor: (rowIndex) =>
+                        rowIndex === 0
+                            ? "#1A5276"
+                            : rowIndex % 2 === 0
+                            ? "#EBF5FB"
+                            : null,
+                    hLineColor: () => "#aaa",
+                    vLineColor: () => "#aaa",
+                    paddingLeft: () => 8,
+                    paddingRight: () => 8,
+                    paddingTop: () => 6,
+                    paddingBottom: () => 6,
                 },
             },
-        };
+        ],
+        styles: {
+            title: {
+                fontSize: 20,
+                bold: true,
+                color: "#154360",
+                alignment: "center",
+                margin: [0, 0, 0, 20],
+            },
+            tableHeader: {
+                bold: true,
+                fontSize: 13,
+                color: "white",
+                fillColor: "#1A5276",
+                alignment: "center",
+            },
+            tableCell: {
+                fontSize: 11,
+                color: "#333",
+            },
+            boldCell: {
+                fontSize: 12,
+                bold: true,
+                color: "#1A5276",
+            },
+            noImage: {
+                fontSize: 10,
+                italics: true,
+                color: "#999",
+            },
+        },
+    };
 
+    if (shouldDownload) {
         pdfMake.createPdf(docDefinition).download("brand-list.pdf");
-    });
-    //  PDF //
+    } else {
+        pdfMake.createPdf(docDefinition).print();
+    }
+}
+
+// Bind the events
+$("#pdfDownload").click(() => generatePdf(true));
+$("#printData").click(() => generatePdf(false));
+
 
     // EXCEL //
 
@@ -343,128 +335,7 @@ $(function () {
     });
     // EXCEL //
 
-    // PRINT //
-    $("#printData").click(async function () {
-        let selected = [];
-        let anyChecked = $(".row-checkbox:checked").length > 0;
-        let table = $(".data-table").DataTable();
-
-        // Collect row data
-        for (let rowIndex = 0; rowIndex < table.rows().count(); rowIndex++) {
-            let data = table.row(rowIndex).data();
-            let node = table.row(rowIndex).node();
-            let isChecked = $(node).find(".row-checkbox").is(":checked");
-
-            if (anyChecked && !isChecked) continue;
-
-            selected.push({
-                id: data.id,
-                name: data.name,
-                logoUrl: data.logo, // This is the image URL from backend
-                description: data.description || "-",
-            });
-        }
-
-        // Convert all logos to base64 before building PDF body
-        for (let i = 0; i < selected.length; i++) {
-            selected[i].logoBase64 = await getBase64ImageFromUrl(
-                selected[i].logoUrl
-            );
-        }
-
-        // Prepare PDF table body
-        const body = [
-            [
-                { text: "Logo", style: "tableHeader" },
-                { text: "Name", style: "tableHeader" },
-                { text: "Description", style: "tableHeader" },
-            ],
-        ];
-
-        selected.forEach((item) => {
-            const logoCell = item.logoBase64
-                ? {
-                      image: item.logoBase64,
-                      width: 50,
-                      alignment: "center",
-                      margin: [0, 5, 0, 5],
-                  }
-                : {
-                      text: "No Image",
-                      style: "noImage",
-                      alignment: "center",
-                  };
-
-            body.push([
-                logoCell,
-                { text: item.name, style: "boldCell" },
-                { text: item.description, style: "tableCell" },
-            ]);
-        });
-
-        // Create PDF doc
-        const docDefinition = {
-            content: [
-                { text: "Brand Catalog", style: "title" },
-                {
-                    table: {
-                        headerRows: 1,
-                        widths: [70, "*", "*"],
-                        body: body,
-                    },
-                    layout: {
-                        fillColor: (rowIndex) =>
-                            rowIndex === 0
-                                ? "#1A5276"
-                                : rowIndex % 2 === 0
-                                ? "#EBF5FB"
-                                : null,
-                        hLineColor: () => "#aaa",
-                        vLineColor: () => "#aaa",
-                        paddingLeft: () => 8,
-                        paddingRight: () => 8,
-                        paddingTop: () => 6,
-                        paddingBottom: () => 6,
-                    },
-                },
-            ],
-            styles: {
-                title: {
-                    fontSize: 20,
-                    bold: true,
-                    color: "#154360",
-                    alignment: "center",
-                    margin: [0, 0, 0, 20],
-                },
-                tableHeader: {
-                    bold: true,
-                    fontSize: 13,
-                    color: "white",
-                    fillColor: "#1A5276",
-                    alignment: "center",
-                },
-                tableCell: {
-                    fontSize: 11,
-                    color: "#333",
-                },
-                boldCell: {
-                    fontSize: 12,
-                    bold: true,
-                    color: "#1A5276",
-                },
-                noImage: {
-                    fontSize: 10,
-                    italics: true,
-                    color: "#999",
-                },
-            },
-        };
-
-        // Open print dialog instead of downloading
-        pdfMake.createPdf(docDefinition).print();
-    });
-
-    // PRINT //
+  
     async function getBase64ImageFromUrl(imageUrl) {
         if (!imageUrl) return null;
         try {

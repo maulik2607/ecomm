@@ -182,26 +182,23 @@ public function destroy($id)
 
 
 
-    public function checkBrandName(Request $request)
-{
-    $name = $request->input('name');
+                    public function checkBrandName(Request $request)
+                {
+                $name = $request->input('name');
+                    $id = $request->input('id'); // Optional (only for update)
 
-    // If ID is provided, we are updating a brand
-    if ($request->has('id')) {
-        $id = decrypt($request->id);
+                    $query = Brand::where('name', $name);
 
-        // Check if the name exists with a different ID
-        $exists = Brand::where('name', $name)
-            ->where('id', '!=', $id)
-            ->exists();
-    } else {
-        // New brand - just check if name exists
-        $exists = Brand::where('name', $name)->exists();
-    }
+                    if ($id) {
+                        $query->where('id', '!=', decrypt($id)); // Ignore current brand ID
+                        $exists = $query->exists();
 
-    // If $exists is true (duplicate found), return false (invalid)
-    // If $exists is false (name is unique or belongs to same ID), return true (valid)
-    return response()->json(!$exists);
-}
+                    return response()->json(!$exists);
+                    }
+
+                    $exists = $query->exists();
+
+                    return response()->json(['exists' => $exists]);
+                }
 
 }

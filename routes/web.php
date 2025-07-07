@@ -28,6 +28,7 @@ Route::middleware(['auth', PreventBackHistory::class])->group(function () {
   Route::post('/admin/brand/export-pdf', [BrandController::class, 'exportPdf'])->name('admin.brand.exportPdf');
   Route::post('/admin/brand/export-excel', [BrandController::class, 'exportExcel'])->name('admin.brand.exportExcel');
   Route::post('/admin/brand/check-brand', [BrandController::class, 'checkBrandName'])->name('brand.checkName');
+  Route::post('/admin/category/check-category', [CategoryController::class, 'checkCategoryName'])->name('category.checkName');
 
   Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 });
