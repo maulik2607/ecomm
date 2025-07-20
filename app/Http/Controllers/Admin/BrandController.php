@@ -43,7 +43,7 @@ class BrandController extends Controller
                     return '
                     <a class="me-3" href="#"><img src="' . asset('back/img/icons/eye.svg') . '" alt="img" /></a>
                     <a class="me-3" href="' . $edit . '"><img src="' . asset('back/img/icons/edit.svg') . '" alt="img" /></a>
-                    <a class="me-3 confirm-text" data-url="'.$delete.'" href="javascript:void();"><img src="' . asset('back/img/icons/delete.svg') . '" alt="img" /></a>
+                    <a class="me-3 confirm-text" data-url="' . $delete . '" href="javascript:void();"><img src="' . asset('back/img/icons/delete.svg') . '" alt="img" /></a>
                 ';
                 })
                 ->rawColumns(['action', 'logo'])
@@ -153,52 +153,74 @@ class BrandController extends Controller
      * Remove the specified resource from storage.
      */
 
-public function destroy($id)
-{
-    try {
-        $id = decrypt($id); // if you are encrypting the ID in route
-        $brand = Brand::findOrFail($id);
+    public function destroy($id)
+    {
+        try {
+            $id = decrypt($id); // if you are encrypting the ID in route
+            $brand = Brand::findOrFail($id);
 
-        // Optional: Delete the logo file from storage if it exists
-         $filePath  =   public_path($brand->logo);
+            // Optional: Delete the logo file from storage if it exists
+            $filePath  =   public_path($brand->logo);
 
             if (file_exists($filePath)) {
                 unlink($filePath);
             }
 
-        $brand->delete(); // Delete the brand record
+            $brand->delete(); // Delete the brand record
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Brand deleted successfully.'
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Something went wrong: ' . $e->getMessage()
-        ], 500);
+            return response()->json([
+                'success' => true,
+                'message' => 'Brand deleted successfully.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Something went wrong: ' . $e->getMessage()
+            ], 500);
+        }
     }
+
+
+
+    // public function checkBrandName(Request $request)
+    // {
+    //     $name = $request->input('name');
+    //     $id = $request->input('id'); // Optional (only for update)
+
+    //     $query = Brand::where('name', $name);
+
+    //     if ($id) {
+    //         $query->where('id', '!=', decrypt($id)); // Ignore current brand ID
+    //         $exists = $query->exists();
+
+    //         return response()->json(!$exists);
+    //     }
+
+    //     $exists = $query->exists();
+
+    //     return response()->json(['exists' => $exists]);
+    // }
+
+  public function checkBrandName(Request $request)
+{
+    $name = $request->input('name');
+    $id = $request->input('id'); // optional (for update)
+
+    $query = Brand::where('name', $name);
+
+    if ($id) {
+        $query->where('id', '!=', decrypt($id)); // skip current record if updating
+    }
+
+    $exists = $query->exists();
+
+    // CASE 1: If request is from jQuery Validate plugin (remote rule)
+    if ($request->ajax() && !$request->has('custom_ajax')) {
+        return response()->json(!$exists); // true if name is available
+    }
+ 
+    // CASE 2: Custom Ajax (manual call)
+    return response()->json(['exists' => $exists]);
 }
-
-
-
-                    public function checkBrandName(Request $request)
-                {
-                $name = $request->input('name');
-                    $id = $request->input('id'); // Optional (only for update)
-
-                    $query = Brand::where('name', $name);
-
-                    if ($id) {
-                        $query->where('id', '!=', decrypt($id)); // Ignore current brand ID
-                        $exists = $query->exists();
-
-                    return response()->json(!$exists);
-                    }
-
-                    $exists = $query->exists();
-
-                    return response()->json(['exists' => $exists]);
-                }
 
 }

@@ -175,27 +175,25 @@ class CategoryController extends Controller
         }
     }
 
-
     public function checkCategoryName(Request $request)
     {
-
         $name = $request->input('name');
-        $id = $request->input('id'); // Optional (only for update)
+        $id = $request->input('id'); // optional (for update)
 
-        $exists = Category::where('name', $name)->exists();
+        $query = Category::where('name', $name);
 
-        // if ($id) {
-        //     $query->where('id', '!=', decrypt($id)); // Ignore current brand ID
-        //     $exists = $query->exists();
-
-        //     return response()->json($exists);
-        // }
-
-        if ($exists == true) {
-
-            return response()->json(false);
-        } else {
-            return response()->json(true);
+        if ($id) {
+            $query->where('id', '!=', decrypt($id)); // skip current record if updating
         }
+
+        $exists = $query->exists();
+
+        // CASE 1: If request is from jQuery Validate plugin (remote rule)
+        if ($request->ajax() && !$request->has('custom_ajax')) {
+            return response()->json(!$exists); // true if name is available
+        }
+
+        // CASE 2: Custom Ajax (manual call)
+        return response()->json(['exists' => $exists]);
     }
 }

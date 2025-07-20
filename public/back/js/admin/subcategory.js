@@ -4,7 +4,7 @@ $(document).ready(function () {
         table = $(".data-table").DataTable({
             processing: true,
             serverSide: true,
-            ajax: "/admin/category",
+            ajax: "/admin/subcategory",
             columns: [
                 {
                     data: "id",
@@ -15,16 +15,14 @@ $(document).ready(function () {
                     },
                 },
                 { data: "name", name: "name" },
-
+                { data: "parent_name", name: "parent_name" },
                 {
                     data: "action",
                     orderable: false,
                     searchable: false,
                 },
             ],
-            createdRow: function (row, data, dataIndex) {
-                $("td", row).eq(1).addClass("productimgname"); // Adds class to first column td
-            },
+         
         });
 
         // Select All checkbox
@@ -78,7 +76,7 @@ $(document).ready(function () {
         },
     });
 
-    $("#categoryForm").validate({
+    $("#subcategoryForm").validate({
         rules: {
             name: {
                 required: true,
@@ -98,9 +96,6 @@ $(document).ready(function () {
                 },
             },
 
-            // product_image: {
-            //     extension: "jpg|jpeg|png|gif|svg",
-            //     filesize: 2097152 }
         },
         messages: {
             name: {

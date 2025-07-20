@@ -10,6 +10,8 @@
     $productMenuRoutes = [
       
         'brand.index',
+        'category.index',
+        'subcategory.index',
     ];
 
     $isProductMenuActive = false;
@@ -31,6 +33,7 @@
        
         <li><a href="{{ route('brand.index') }}" class="{{ request()->routeIs('brand.index') ? 'active' : '' }}">Brand List</a></li>
         <li><a href="{{ route('category.index') }}" class="{{ request()->routeIs('category.index') ? 'active' : '' }}">Category List</a></li>
+        <li><a href="{{ route('subcategory.index') }}" class="{{ request()->routeIs('subcategory.index') ? 'active' : '' }}">Subcategory List</a></li>
       
     </ul>
 </li>

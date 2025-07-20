@@ -18,11 +18,13 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('logo')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->softDeletes(); // adds a nullable 'deleted_at' timestamp
             $table->timestamps();
         });
     }
 
-    /**
+    /** 
+
      * Reverse the migrations.
      */
     public function down(): void
