@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tax_rates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vendor_id')->nullable()->constrained()->onDelete('cascade');
              $table->string('name');
             $table->decimal('rate', 5, 2);
             $table->json('regions')->nullable();

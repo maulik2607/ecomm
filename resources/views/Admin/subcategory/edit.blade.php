@@ -19,14 +19,13 @@
                           <div class="form-group">
                             <label>Category</label>
                             <h6>Choose Category</h6>
-                            <select name="parent_id" id="parent_id">
+                            <select class="form-control" name="parent_id" id="parent_id">
                                 <option value="">Select Category</option>
-                                @foreach($category as $catval)
-                                <option value="{{$catval->id}}">{{$catval->name}}</option>
+                                @foreach($maincategory as $maincatval)
+                                <option {{($subcategory->parent_id == $maincatval->id)?"selected":""}} value="{{$maincatval->id}}">{{$maincatval->name}}</option>
                                 @endforeach
                             </select>
-                            <input type="text" name="name" class="form-control" value="{{$subcategory->name}}">
-                            @error('name')
+                            @error('parent_id')
                             <small class="text-danger">{{ $message }}</small>
                             @enderror
                         </div>
@@ -38,10 +37,7 @@
                             @enderror
                         </div>
                     </div>
-                  
-                 
                 </div>
-             
             </div>
         </div>
     </div>

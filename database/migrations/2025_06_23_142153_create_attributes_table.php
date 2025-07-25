@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vendor_id')->nullable()->constrained()->onDelete('cascade');
                 $table->string('name');
             $table->string('type')->default('select'); // select, text, checkbox etc.
             $table->timestamps();

@@ -96,15 +96,30 @@ class SubcategoryController extends Controller
      */
     public function edit(string $id)
     {
-        //
+     $catID = decrypt($id);
+        $page = 'admin.subcategory.edit';
+        $title = 'Edit subcategory';
+        $js = 'Sub Category';
+        $subcategory = Category::findOrFail($catID);
+        $maincategory = Category::all();
+        return view('admin/layout', compact('page', 'title', 'js', 'subcategory','maincategory', 'id'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+   public function update(StoreSubcategoryRequest $request, string $id)
     {
-        //
+
+        $id = decrypt($id);
+      
+        $category = Category::findOrFail($id);
+        $category->parent_id = $request->parent_id;
+        $category->name = $request->name;
+
+
+        $category->save();
+        return redirect()->route('subcategory.index')->with('success', 'Cateogory updated successfully.');
     }
 
     /**

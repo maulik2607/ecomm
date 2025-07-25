@@ -107,7 +107,8 @@ class CategoryController extends Controller
         $title = 'Edit Category';
         $js = 'Category';
         $category = Category::findOrFail($brandId);
-        return view('admin/layout', compact('page', 'title', 'js', 'category', 'id'));
+        $maincatgory = Category::all();
+        return view('admin/layout', compact('page', 'title', 'js', 'category', 'maincatgory','id'));
     }
 
     /**

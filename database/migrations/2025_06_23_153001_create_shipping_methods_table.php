@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('shipping_methods', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('vendor_id')->nullable()->constrained()->onDelete('cascade');
+
               $table->string('name');
             $table->decimal('cost', 12, 2);
             $table->json('regions')->nullable();

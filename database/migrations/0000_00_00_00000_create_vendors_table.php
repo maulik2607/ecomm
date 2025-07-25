@@ -11,25 +11,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('vendors', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('vendor_id')->nullable()->constrained()->onDelete('cascade');
+             
             $table->string('name');
-            $table->string('slug')->unique();
-            $table->foreignId('parent_id')->nullable()->constrained('categories')->onDelete('cascade');
-            $table->text('description')->nullable();
+            $table->string('email')->unique();
+            $table->string('phone')->nullable();
+            $table->string('logo')->nullable();
+            $table->text('address')->nullable();
             $table->boolean('is_active')->default(true);
-                $table->softDeletes();
             $table->timestamps();
         });
     }
-
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('vendors');
     }
 };

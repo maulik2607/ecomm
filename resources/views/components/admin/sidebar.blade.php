@@ -11,7 +11,12 @@
       
         'brand.index',
         'category.index',
+        'category.create',
+        'category.edit',
         'subcategory.index',
+        'subcategory.create',
+        'subcategory.edit',
+        ''
     ];
 
     $isProductMenuActive = false;
@@ -31,13 +36,15 @@
     </a>
     <ul style="{{ $isProductMenuActive ? 'display: block;' : '' }}">
        
-        <li><a href="{{ route('brand.index') }}" class="{{ request()->routeIs('brand.index') ? 'active' : '' }}">Brand List</a></li>
-        <li><a href="{{ route('category.index') }}" class="{{ request()->routeIs('category.index') ? 'active' : '' }}">Category List</a></li>
-        <li><a href="{{ route('subcategory.index') }}" class="{{ request()->routeIs('subcategory.index') ? 'active' : '' }}">Subcategory List</a></li>
+        <li><a href="{{ route('brand.index') }}" class="{{ (request()->routeIs('brand.index') || request()->routeIs('brand.create') || request()->routeIs('brand.edit')) ? 'active' : '' }}">Brand List</a></li>
+        <li><a href="{{ route('category.index') }}" class="{{ (request()->routeIs('category.index') || request()->routeIs('category.create') || request()->routeIs('category.edit')) ? 'active' : '' }}">Category List</a></li>
+        <li><a href="{{ route('subcategory.index') }}" class="{{ (request()->routeIs('subcategory.index') || request()->routeIs('subcategory.create') || request()->routeIs('subcategory.edit')) ? 'active' : '' }}">Subcategory List</a></li>
       
     </ul>
 </li>
-
+<li class="{{ request()->routeIs('role_manage.index') ? 'active' : '' }}">
+<a href="{{route('role_manage.index')}}"><img src="{{asset('back/img/icons/users1.svg')}}" alt="img"><span> Role Manage</span> </a>
+</li>
 <!-- <li class="submenu">
 <a href="javascript:void(0);"><img src="{{asset('back/img/icons/product.svg')}}" alt="img"><span> Product</span> <span class="menu-arrow"></span></a>
 <ul>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\RoleMiddleware;
 use App\Http\Middleware\PreventBackHistory;
 use App\Exports\CategoryTemplateExport;
+use App\Http\Controllers\Admin\RoleManageController;
 use Maatwebsite\Excel\Facades\Excel;
 Route::get('/', function () {
   return view('welcome');
@@ -25,6 +26,7 @@ Route::middleware(['auth', PreventBackHistory::class])->group(function () {
     Route::resource('brand', BrandController::class);
     Route::resource('category', CategoryController::class);
     Route::resource('subcategory', SubcategoryController::class);
+    Route::resource('role_manage', RoleManageController::class);
 
 Route::get('/export-category-template', [SubcategoryController::class, 'exportCategoryTemplate'])
     ->name('categories.template');
