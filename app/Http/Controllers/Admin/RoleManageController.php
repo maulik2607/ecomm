@@ -12,7 +12,7 @@ class RoleManageController extends Controller
      */
      public function index(Request $request)
     {
-        $page = 'admin.role.index';
+        $page = 'admin.role_manage.index';
         $title = 'Role List';
         $js = 'role';
 
